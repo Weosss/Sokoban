@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 
-#define WINDOW_WIDTH 79
+#define WINDOW_WIDTH 40
 #define WINDOW_HEIGHT 23
 #define WIDTH 12
 #define HEIGHT 8
@@ -11,39 +11,26 @@
 enum dir { up, down, left, right } movement;
 int plX, plY;
 int step = 0;
-int level;
-char bufch[8][12];
 int xcount;
 int win = 0;
-
 char level1[8][12] =
 {
 
     {'#', '#', '#', '#', '#', '#', '#', '#', '#','#','#', '#'},
     {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',' ',' ', '#'},
-    {'#', ' ', ' ', ' ', ' ', 'U', 'P', ' ', ' ',' ',' ', '#'},
-    {'#', ' ', ' ', 'x', ' ', ' ', 'U', ' ', ' ',' ',' ', '#'},
-    {'#', ' ', ' ', ' ', ' ', ' ', 'x', '#', ' ',' ',' ', '#'},
-    {'#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ',' ',' ', '#'},
-    {'#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ',' ',' ', '#'},
+    {'#', ' ', 'U', 'U', ' ', ' ', 'P', ' ', ' ',' ',' ', '#'},
+    {'#', ' ', '#', ' ', '#', ' ', '#', '#', ' ',' ',' ', '#'},
+    {'#', ' ', 'x', ' ', '#', ' ', ' ', '#', ' ',' ',' ', '#'},
+    {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'U','#',' ', '#'},
+    {'#', ' ', ' ', '#', '#', '#', 'x', ' ', ' ','#','x', '#'},
     {'#', '#', '#', '#', '#', '#', '#', '#', '#','#','#', '#'}
 
 };
-char level2[8][12] =
-{
 
-    {'#', '#', '#', '#', '#', '#', '#', '#', '#','#','#', '#'},
-    {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',' ',' ', '#'},
-    {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',' ',' ', '#'},
-    {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',' ',' ', '#'},
-    {'#', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ',' ',' ', '#'},
-    {'#', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ',' ',' ', '#'},
-    {'#', 'P', ' ', ' ', ' ', '#', ' ', ' ', ' ',' ',' ', '#'},
-    {'#', '#', '#', '#', '#', '#', '#', '#', '#','#','#', '#'}
-};
 
 void setup()
 {
+
     int tmp = 0;
     for (int i = 0; i < HEIGHT; i++)
     {
@@ -61,15 +48,23 @@ void setup()
 
 void printMap()
 {
-    int localX, localY;
-    localX = (WINDOW_WIDTH - WIDTH) / 2;
-    localY = (WINDOW_HEIGHT - HEIGHT) / 2;
+    erase();
+    int x, y;
+    int xn, yn;
+    x = getmaxx(stdscr);
+    y = getmaxy(stdscr);
+    xn = (x / 2) - (WIDTH / 2);
+    yn = (y / 2) - (HEIGHT / 2);
+    mvprintw(0, 0, "Boxes to win: %d", win);
+    mvprintw(0, 15, "/3");
+    mvprintw(1, 0, "Steps: %d", step);
+    mvprintw(0, xn, "Move - wasd. Exit - e.");
     for (int i = 0; i < HEIGHT; i++)
     {
         for (int j = 0; j < WIDTH; j++)
         {
             const char tmpCh = level1[i][j];
-            mvprintw(i + localY, j + localX, &tmpCh);
+            mvprintw(i + yn, j + xn, &tmpCh);
         }
     }
 }
@@ -92,16 +87,15 @@ void game()
                 step++;
                 win++;
             }
-            else if (level1[plY][plX - 1] == 'U' && level1[plY][plX - 2] != '#' && xcount == 0)
+            else if (level1[plY][plX - 1] == 'U' && level1[plY][plX - 2] != '#' && xcount == 0 && level1[plY][plX - 2] != 'U')
             {
                 level1[plY][plX - 2] = 'U';
-                level1[plY][plX - 1] = ' ';
                 level1[plY][plX] = ' ';
                 level1[plY][plX - 1] = 'P';
                 plX--;
                 step++;
             }
-            else if (level1[plY][plX - 1] == 'U' && level1[plY][plX - 2] != '#' && xcount == 1)
+            else if (level1[plY][plX - 1] == 'U' && level1[plY][plX - 2] != '#' && xcount == 1 && level1[plY][plX - 2] != 'U')
             {
                 level1[plY][plX - 2] = 'U';
                 level1[plY][plX - 1] = ' ';
@@ -150,7 +144,7 @@ void game()
                 step++;
                 win++;
             }
-            else if (level1[plY][plX + 1] == 'U' && level1[plY][plX + 2] != '#' && xcount == 0)
+            else if (level1[plY][plX + 1] == 'U' && level1[plY][plX + 2] != '#' && xcount == 0 && level1[plY][plX + 2] != 'U')
             {
                 level1[plY][plX + 2] = 'U';
                 level1[plY][plX + 1] = ' ';
@@ -159,7 +153,7 @@ void game()
                 plX++;
                 step++;
             }
-            else if (level1[plY][plX + 1] == 'U' && level1[plY][plX + 2] != '#' && xcount == 1)
+            else if (level1[plY][plX + 1] == 'U' && level1[plY][plX + 2] != '#' && xcount == 1 && level1[plY][plX + 2] != 'U')
             {
                 level1[plY][plX + 2] = 'U';
                 level1[plY][plX + 1] = ' ';
@@ -206,7 +200,7 @@ void game()
                 step++;
                 win++;
             }
-            else if (level1[plY - 1][plX] == 'U' && level1[plY - 2][plX] != '#' && xcount == 0)
+            else if (level1[plY - 1][plX] == 'U' && level1[plY - 2][plX] != '#' && xcount == 0 && level1[plY - 2][plX] != 'U')
             {
                 level1[plY - 2][plX] = 'U';
                 level1[plY - 1][plX] = ' ';
@@ -215,7 +209,7 @@ void game()
                 plY--;
                 step++;
             }
-            else if (level1[plY - 1][plX] == 'U' && level1[plY - 2][plX] != '#' && xcount == 1)
+            else if (level1[plY - 1][plX] == 'U' && level1[plY - 2][plX] != '#' && xcount == 1 && level1[plY - 2][plX] != 'U')
             {
                 level1[plY - 2][plX] = 'U';
                 level1[plY - 1][plX] = ' ';
@@ -262,7 +256,7 @@ void game()
                 step++;
                 win++;
             }
-            else if (level1[plY + 1][plX] == 'U' && level1[plY + 2][plX] != '#' && xcount == 0)
+            else if (level1[plY + 1][plX] == 'U' && level1[plY + 2][plX] != '#' && xcount == 0 && level1[plY + 2][plX] != 'U')
             {
                 level1[plY + 2][plX] = 'U';
                 level1[plY + 1][plX] = ' ';
@@ -271,7 +265,7 @@ void game()
                 plY++;
                 step++;
             }
-            else if (level1[plY + 1][plX] == 'U' && level1[plY + 2][plX] != '#' && xcount == 1)
+            else if (level1[plY + 1][plX] == 'U' && level1[plY + 2][plX] != '#' && xcount == 1 && level1[plY + 2][plX] != 'U')
             {
                 level1[plY + 2][plX] = 'U';
                 level1[plY + 1][plX] = ' ';
@@ -311,24 +305,19 @@ void game()
 }
 
 int main() {
-    printf("Choose lvl: ");
     mvprintw(0, 0, "Game end");
-    bool Gg = false;
     initscr();
     curs_set(0);
     noecho();
     setup();
-    while (!Gg) {
-        mvprintw(0, 0, "Boxes to win: %d", win);
-        mvprintw(0, 15, "/3");
-        mvprintw(1, 0, "Steps: %d", step);
+    while (win != 3) {
         printMap();
         int ch = getch();
         if (ch == 'w') movement = up;
         if (ch == 's') movement = down;
         if (ch == 'a') movement = left;
         if (ch == 'd') movement = right;
-        if (ch == 'e') Gg = true;
+        if (ch == 'e') win = 3;
         game();
     }
     erase();
