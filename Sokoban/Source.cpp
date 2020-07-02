@@ -328,7 +328,7 @@ int main(int agrc, char* argv[]) {
             ++count;
         }
 
-    } // конец внешнего for
+    } 
     fclose(level);
     mvprintw(0, 0, "Game end");
     initscr();
