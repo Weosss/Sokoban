@@ -10,20 +10,20 @@
 
 enum dir { up, down, left, right } movement;
 int plX, plY;
-int crossX[3], crossY[3];
 int step = 0;
 int level;
 char bufch[8][12];
 int xcount;
+int win = 0;
 
 char level1[8][12] =
 {
 
     {'#', '#', '#', '#', '#', '#', '#', '#', '#','#','#', '#'},
     {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',' ',' ', '#'},
-    {'#', ' ', ' ', ' ', 'x', ' ', 'P', ' ', ' ',' ',' ', '#'},
-    {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',' ',' ', '#'},
-    {'#', ' ', ' ', ' ', ' ', 'U', ' ', '#', ' ',' ',' ', '#'},
+    {'#', ' ', ' ', ' ', ' ', 'U', 'P', ' ', ' ',' ',' ', '#'},
+    {'#', ' ', ' ', 'x', ' ', ' ', 'U', ' ', ' ',' ',' ', '#'},
+    {'#', ' ', ' ', ' ', ' ', ' ', 'x', '#', ' ',' ',' ', '#'},
     {'#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ',' ',' ', '#'},
     {'#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ',' ',' ', '#'},
     {'#', '#', '#', '#', '#', '#', '#', '#', '#','#','#', '#'}
@@ -54,12 +54,6 @@ void setup()
                 plY = i;
                 plX = j;
             }
-            if (level1[i][j] == 'x') 
-            {
-                crossY[tmp] = i;
-                crossX[tmp] = j;
-                tmp++;
-            }
         }
     }
 }
@@ -87,9 +81,18 @@ void game()
     switch (movement)
     {
     case left:
-        if (level1[plY][plX - 1] != '#')
+        if (level1[plY][plX - 1] != '#' && level1[plY][plX - 1] != 'Q')
         {
-            if (level1[plY][plX - 1] == 'U' && level1[plY][plX - 2] != '#' && xcount == 0)
+            if (level1[plY][plX - 1] == 'U' && level1[plY][plX - 2] == 'x')
+            {
+                level1[plY][plX - 2] = 'Q';
+                level1[plY][plX] = ' ';
+                level1[plY][plX - 1] = 'P';
+                plX--;
+                step++;
+                win++;
+            }
+            else if (level1[plY][plX - 1] == 'U' && level1[plY][plX - 2] != '#' && xcount == 0)
             {
                 level1[plY][plX - 2] = 'U';
                 level1[plY][plX - 1] = ' ';
@@ -108,6 +111,7 @@ void game()
                 step++;
                 xcount--;
             }
+
             else if (level1[plY][plX - 1] == 'x')
             {
                 xcount++;
@@ -135,9 +139,18 @@ void game()
         break;
 
     case right:
-        if (level1[plY][plX + 1] != '#')
+        if (level1[plY][plX + 1] != '#' && level1[plY][plX + 1] != 'Q')
         {
-            if (level1[plY][plX + 1] == 'U' && level1[plY][plX + 2] != '#' && xcount == 0)
+            if (level1[plY][plX + 1] == 'U' && level1[plY][plX + 2] == 'x')
+            {
+                level1[plY][plX + 2] = 'Q';
+                level1[plY][plX] = ' ';
+                level1[plY][plX + 1] = 'P';
+                plX++;
+                step++;
+                win++;
+            }
+            else if (level1[plY][plX + 1] == 'U' && level1[plY][plX + 2] != '#' && xcount == 0)
             {
                 level1[plY][plX + 2] = 'U';
                 level1[plY][plX + 1] = ' ';
@@ -182,9 +195,18 @@ void game()
         }
         break;
     case up:
-        if (level1[plY - 1][plX] != '#')
+        if (level1[plY - 1][plX] != '#' && level1[plY - 1][plX] != 'Q')
         {
-            if (level1[plY - 1][plX] == 'U' && level1[plY - 2][plX] != '#' && xcount == 0)
+            if (level1[plY - 1][plX] == 'U' && level1[plY - 2][plX] == 'x')
+            {
+                level1[plY - 2][plX] = 'Q';
+                level1[plY][plX] = ' ';
+                level1[plY - 1][plX] = 'P';
+                plY--;
+                step++;
+                win++;
+            }
+            else if (level1[plY - 1][plX] == 'U' && level1[plY - 2][plX] != '#' && xcount == 0)
             {
                 level1[plY - 2][plX] = 'U';
                 level1[plY - 1][plX] = ' ';
@@ -211,7 +233,7 @@ void game()
                 plY--;
                 step++;
             }
-            else if (level1[plY - 1][plX] != 'U' && xcount == 0) 
+            else if (level1[plY - 1][plX] != 'U' && xcount == 0)
             {
                 level1[plY][plX] = ' ';
                 level1[plY - 1][plX] = 'P';
@@ -229,9 +251,18 @@ void game()
         }
         break;
     case down:
-        if (level1[plY + 1][plX] != '#')
+        if (level1[plY + 1][plX] != '#' && level1[plY + 1][plX] != 'Q')
         {
-            if (level1[plY + 1][plX] == 'U' && level1[plY + 2][plX] != '#' && xcount == 0)
+            if (level1[plY + 1][plX] == 'U' && level1[plY + 2][plX] == 'x')
+            {
+                level1[plY + 2][plX] = 'Q';
+                level1[plY][plX] = ' ';
+                level1[plY + 1][plX] = 'P';
+                plY++;
+                step++;
+                win++;
+            }
+            else if (level1[plY + 1][plX] == 'U' && level1[plY + 2][plX] != '#' && xcount == 0)
             {
                 level1[plY + 2][plX] = 'U';
                 level1[plY + 1][plX] = ' ';
@@ -288,7 +319,9 @@ int main() {
     noecho();
     setup();
     while (!Gg) {
-        mvprintw(0, 0, "Steps: %d", step);
+        mvprintw(0, 0, "Boxes to win: %d", win);
+        mvprintw(0, 15, "/3");
+        mvprintw(1, 0, "Steps: %d", step);
         printMap();
         int ch = getch();
         if (ch == 'w') movement = up;
