@@ -10,7 +10,7 @@
 
 enum dir { up, down, left, right } movement;
 int plX, plY;
-int turn = 0;
+int step = 0;
 int level;
 char bufch[8][12];
 
@@ -89,12 +89,15 @@ void game()
                 level1[plY][plX] = ' ';
                 level1[plY][plX - 1] = 'P';
                 plX--;
+                step++;
+
             }
             else if (level1[plY][plX - 1] != 'U')
             {
                 level1[plY][plX] = ' ';
                 level1[plY][plX - 1] = 'P';
                 plX--;
+                step++;
             }
         }
         break;
@@ -109,12 +112,14 @@ void game()
                 level1[plY][plX] = ' ';
                 level1[plY][plX + 1] = 'P';
                 plX++;
+                step++;
             }
             else if (level1[plY][plX + 1] != 'U')
             {
                 level1[plY][plX] = ' ';
                 level1[plY][plX + 1] = 'P';
                 plX++;
+                step++;
             }
         }
         break;
@@ -128,12 +133,14 @@ void game()
                 level1[plY][plX] = ' ';
                 level1[plY - 1][plX] = 'P';
                 plY--;
+                step++;
             }
             else if (level1[plY - 1][plX] != 'U') 
             {
                 level1[plY][plX] = ' ';
                 level1[plY - 1][plX] = 'P';
                 plY--;
+                step++;
             }
         }
         break;
@@ -147,12 +154,14 @@ void game()
                 level1[plY][plX] = ' ';
                 level1[plY + 1][plX] = 'P';
                 plY++;
+                step++;
             }
             else if (level1[plY + 1][plX] != 'U')
             {
                 level1[plY][plX] = ' ';
                 level1[plY + 1][plX] = 'P';
                 plY++;
+                step++;
             }
         }
         break;
@@ -169,6 +178,7 @@ int main() {
     noecho();
     setup();
     while (!Gg) {
+        mvprintw(0, 0, "Steps: %d", step);
         printMap();
         int ch = getch();
         if (ch == 'w') movement = up;
@@ -178,7 +188,8 @@ int main() {
         if (ch == 'e') Gg = true;
         game();
     }
-    mvprintw(WINDOW_HEIGHT / 2, WINDOW_WIDTH / 3, "Game end");
+    erase();
+    mvprintw(WINDOW_HEIGHT / 2, WINDOW_WIDTH / 3, "Game end. Your quantity of steps: %d", step);
     refresh();
     getch();
     endwin();
