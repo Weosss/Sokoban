@@ -1,6 +1,7 @@
-﻿#include <stdio.h>
-#include <curses.h>
+﻿#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
+#include <curses.h>
+#include <stdlib.h>
 
 
 #define WIDTH 12
@@ -10,21 +11,22 @@ enum dir { up, down, left, right } movement;
 int plX, plY;
 int step = 0;
 int xcount;
-int win = 0;
-char level1[8][12] =
+int win;
+void file_open(void);
+FILE* level;
+char ch;
+char bufch[HEIGHT][WIDTH];
+
+int o, p, count = 0;
+
+void file_open(void) 
 {
-
-    {'#', '#', '#', '#', '#', '#', '#', '#', '#','#','#', '#'},
-    {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',' ',' ', '#'},
-    {'#', ' ', 'U', 'U', ' ', ' ', 'P', ' ', ' ',' ',' ', '#'},
-    {'#', ' ', '#', ' ', '#', ' ', '#', '#', ' ',' ',' ', '#'},
-    {'#', ' ', 'x', ' ', '#', ' ', ' ', '#', ' ',' ',' ', '#'},
-    {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'U','#',' ', '#'},
-    {'#', ' ', ' ', '#', '#', '#', 'x', ' ', ' ','#','x', '#'},
-    {'#', '#', '#', '#', '#', '#', '#', '#', '#','#','#', '#'}
-
-};
-
+    if ((level = fopen("level.txt", "r")) == NULL)
+    {
+        fprintf(stdout, "%s\n", "Cant read lvl file ");
+        exit(EXIT_FAILURE);
+    }
+}
 
 void setup()
 {
@@ -34,7 +36,7 @@ void setup()
     {
         for (int j = 0; j < WIDTH; j++)
         {
-            if (level1[i][j] == 'P')
+            if (bufch[i][j] == 'P')
             {
                 plY = i;
                 plX = j;
@@ -61,7 +63,7 @@ void printMap()
     {
         for (int j = 0; j < WIDTH; j++)
         {
-            const char tmpCh = level1[i][j];
+            const char tmpCh = bufch[i][j];
             mvprintw(i + yn, j + xn, &tmpCh);
         }
     }
@@ -74,55 +76,55 @@ void game()
     switch (movement)
     {
     case left:
-        if (level1[plY][plX - 1] != '#' && level1[plY][plX - 1] != 'Q')
+        if (bufch[plY][plX - 1] != '#' && bufch[plY][plX - 1] != 'Q')
         {
-            if (level1[plY][plX - 1] == 'U' && level1[plY][plX - 2] == 'x')
+            if (bufch[plY][plX - 1] == 'U' && bufch[plY][plX - 2] == 'x')
             {
-                level1[plY][plX - 2] = 'Q';
-                level1[plY][plX] = ' ';
-                level1[plY][plX - 1] = 'P';
+                bufch[plY][plX - 2] = 'Q';
+                bufch[plY][plX] = ' ';
+                bufch[plY][plX - 1] = 'P';
                 plX--;
                 step++;
                 win++;
             }
-            else if (level1[plY][plX - 1] == 'U' && level1[plY][plX - 2] != '#' && xcount == 0 && level1[plY][plX - 2] != 'U')
+            else if (bufch[plY][plX - 1] == 'U' && bufch[plY][plX - 2] != '#' && xcount == 0 && bufch[plY][plX - 2] != 'U' && bufch[plY][plX - 2] != 'Q')
             {
-                level1[plY][plX - 2] = 'U';
-                level1[plY][plX] = ' ';
-                level1[plY][plX - 1] = 'P';
+                bufch[plY][plX - 2] = 'U';
+                bufch[plY][plX] = ' ';
+                bufch[plY][plX - 1] = 'P';
                 plX--;
                 step++;
             }
-            else if (level1[plY][plX - 1] == 'U' && level1[plY][plX - 2] != '#' && xcount == 1 && level1[plY][plX - 2] != 'U')
+            else if (bufch[plY][plX - 1] == 'U' && bufch[plY][plX - 2] != '#' && xcount == 1 && bufch[plY][plX - 2] != 'U' && bufch[plY][plX - 2] != 'Q')
             {
-                level1[plY][plX - 2] = 'U';
-                level1[plY][plX - 1] = ' ';
-                level1[plY][plX] = 'x';
-                level1[plY][plX - 1] = 'P';
+                bufch[plY][plX - 2] = 'U';
+                bufch[plY][plX - 1] = ' ';
+                bufch[plY][plX] = 'x';
+                bufch[plY][plX - 1] = 'P';
                 plX--;
                 step++;
                 xcount--;
             }
 
-            else if (level1[plY][plX - 1] == 'x')
+            else if (bufch[plY][plX - 1] == 'x')
             {
                 xcount++;
-                level1[plY][plX] = ' ';
-                level1[plY][plX - 1] = 'P';
+                bufch[plY][plX] = ' ';
+                bufch[plY][plX - 1] = 'P';
                 plX--;
                 step++;
             }
-            else if (level1[plY][plX - 1] != 'U' && xcount == 0)
+            else if (bufch[plY][plX - 1] != 'U' && xcount == 0)
             {
-                level1[plY][plX] = ' ';
-                level1[plY][plX - 1] = 'P';
+                bufch[plY][plX] = ' ';
+                bufch[plY][plX - 1] = 'P';
                 plX--;
                 step++;
             }
-            else if (level1[plY][plX - 1] != 'U' && xcount == 1)
+            else if (bufch[plY][plX - 1] != 'U' && xcount == 1)
             {
-                level1[plY][plX] = 'x';
-                level1[plY][plX - 1] = 'P';
+                bufch[plY][plX] = 'x';
+                bufch[plY][plX - 1] = 'P';
                 plX--;
                 step++;
                 xcount--;
@@ -131,55 +133,55 @@ void game()
         break;
 
     case right:
-        if (level1[plY][plX + 1] != '#' && level1[plY][plX + 1] != 'Q')
+        if (bufch[plY][plX + 1] != '#' && bufch[plY][plX + 1] != 'Q')
         {
-            if (level1[plY][plX + 1] == 'U' && level1[plY][plX + 2] == 'x')
+            if (bufch[plY][plX + 1] == 'U' && bufch[plY][plX + 2] == 'x')
             {
-                level1[plY][plX + 2] = 'Q';
-                level1[plY][plX] = ' ';
-                level1[plY][plX + 1] = 'P';
+                bufch[plY][plX + 2] = 'Q';
+                bufch[plY][plX] = ' ';
+                bufch[plY][plX + 1] = 'P';
                 plX++;
                 step++;
                 win++;
             }
-            else if (level1[plY][plX + 1] == 'U' && level1[plY][plX + 2] != '#' && xcount == 0 && level1[plY][plX + 2] != 'U')
+            else if (bufch[plY][plX + 1] == 'U' && bufch[plY][plX + 2] != '#' && xcount == 0 && bufch[plY][plX + 2] != 'U' && bufch[plY][plX + 2] != 'Q')
             {
-                level1[plY][plX + 2] = 'U';
-                level1[plY][plX + 1] = ' ';
-                level1[plY][plX] = ' ';
-                level1[plY][plX + 1] = 'P';
+                bufch[plY][plX + 2] = 'U';
+                bufch[plY][plX + 1] = ' ';
+                bufch[plY][plX] = ' ';
+                bufch[plY][plX + 1] = 'P';
                 plX++;
                 step++;
             }
-            else if (level1[plY][plX + 1] == 'U' && level1[plY][plX + 2] != '#' && xcount == 1 && level1[plY][plX + 2] != 'U')
+            else if (bufch[plY][plX + 1] == 'U' && bufch[plY][plX + 2] != '#' && xcount == 1 && bufch[plY][plX + 2] != 'U' && bufch[plY][plX + 2] != 'Q')
             {
-                level1[plY][plX + 2] = 'U';
-                level1[plY][plX + 1] = ' ';
-                level1[plY][plX] = 'x';
-                level1[plY][plX + 1] = 'P';
+                bufch[plY][plX + 2] = 'U';
+                bufch[plY][plX + 1] = ' ';
+                bufch[plY][plX] = 'x';
+                bufch[plY][plX + 1] = 'P';
                 plX++;
                 step++;
                 xcount--;
             }
-            else if (level1[plY][plX + 1] == 'x')
+            else if (bufch[plY][plX + 1] == 'x')
             {
                 xcount++;
-                level1[plY][plX] = ' ';
-                level1[plY][plX + 1] = 'P';
+                bufch[plY][plX] = ' ';
+                bufch[plY][plX + 1] = 'P';
                 plX++;
                 step++;
             }
-            else if (level1[plY][plX + 1] != 'U' && xcount == 0)
+            else if (bufch[plY][plX + 1] != 'U' && xcount == 0)
             {
-                level1[plY][plX] = ' ';
-                level1[plY][plX + 1] = 'P';
+                bufch[plY][plX] = ' ';
+                bufch[plY][plX + 1] = 'P';
                 plX++;
                 step++;
             }
-            else if (level1[plY][plX + 1] != 'U' && xcount == 1)
+            else if (bufch[plY][plX + 1] != 'U' && xcount == 1)
             {
-                level1[plY][plX] = 'x';
-                level1[plY][plX + 1] = 'P';
+                bufch[plY][plX] = 'x';
+                bufch[plY][plX + 1] = 'P';
                 plX++;
                 step++;
                 xcount--;
@@ -187,55 +189,55 @@ void game()
         }
         break;
     case up:
-        if (level1[plY - 1][plX] != '#' && level1[plY - 1][plX] != 'Q')
+        if (bufch[plY - 1][plX] != '#' && bufch[plY - 1][plX] != 'Q')
         {
-            if (level1[plY - 1][plX] == 'U' && level1[plY - 2][plX] == 'x')
+            if (bufch[plY - 1][plX] == 'U' && bufch[plY - 2][plX] == 'x')
             {
-                level1[plY - 2][plX] = 'Q';
-                level1[plY][plX] = ' ';
-                level1[plY - 1][plX] = 'P';
+                bufch[plY - 2][plX] = 'Q';
+                bufch[plY][plX] = ' ';
+                bufch[plY - 1][plX] = 'P';
                 plY--;
                 step++;
                 win++;
             }
-            else if (level1[plY - 1][plX] == 'U' && level1[plY - 2][plX] != '#' && xcount == 0 && level1[plY - 2][plX] != 'U')
+            else if (bufch[plY - 1][plX] == 'U' && bufch[plY - 2][plX] != '#' && xcount == 0 && bufch[plY - 2][plX] != 'U' && bufch[plY - 2][plX] != 'Q')
             {
-                level1[plY - 2][plX] = 'U';
-                level1[plY - 1][plX] = ' ';
-                level1[plY][plX] = ' ';
-                level1[plY - 1][plX] = 'P';
+                bufch[plY - 2][plX] = 'U';
+                bufch[plY - 1][plX] = ' ';
+                bufch[plY][plX] = ' ';
+                bufch[plY - 1][plX] = 'P';
                 plY--;
                 step++;
             }
-            else if (level1[plY - 1][plX] == 'U' && level1[plY - 2][plX] != '#' && xcount == 1 && level1[plY - 2][plX] != 'U')
+            else if (bufch[plY - 1][plX] == 'U' && bufch[plY - 2][plX] != '#' && xcount == 1 && bufch[plY - 2][plX] != 'U' && bufch[plY - 2][plX] != 'Q')
             {
-                level1[plY - 2][plX] = 'U';
-                level1[plY - 1][plX] = ' ';
-                level1[plY][plX] = 'x';
-                level1[plY - 1][plX] = 'P';
+                bufch[plY - 2][plX] = 'U';
+                bufch[plY - 1][plX] = ' ';
+                bufch[plY][plX] = 'x';
+                bufch[plY - 1][plX] = 'P';
                 plY--;
                 step++;
                 xcount--;
             }
-            else if (level1[plY - 1][plX] == 'x')
+            else if (bufch[plY - 1][plX] == 'x')
             {
                 xcount++;
-                level1[plY][plX] = ' ';
-                level1[plY - 1][plX] = 'P';
+                bufch[plY][plX] = ' ';
+                bufch[plY - 1][plX] = 'P';
                 plY--;
                 step++;
             }
-            else if (level1[plY - 1][plX] != 'U' && xcount == 0)
+            else if (bufch[plY - 1][plX] != 'U' && xcount == 0)
             {
-                level1[plY][plX] = ' ';
-                level1[plY - 1][plX] = 'P';
+                bufch[plY][plX] = ' ';
+                bufch[plY - 1][plX] = 'P';
                 plY--;
                 step++;
             }
-            else if (level1[plY - 1][plX] != 'U' && xcount == 1)
+            else if (bufch[plY - 1][plX] != 'U' && xcount == 1)
             {
-                level1[plY][plX] = 'x';
-                level1[plY - 1][plX] = 'P';
+                bufch[plY][plX] = 'x';
+                bufch[plY - 1][plX] = 'P';
                 plY--;
                 step++;
                 xcount--;
@@ -243,55 +245,55 @@ void game()
         }
         break;
     case down:
-        if (level1[plY + 1][plX] != '#' && level1[plY + 1][plX] != 'Q')
+        if (bufch[plY + 1][plX] != '#' && bufch[plY + 1][plX] != 'Q')
         {
-            if (level1[plY + 1][plX] == 'U' && level1[plY + 2][plX] == 'x')
+            if (bufch[plY + 1][plX] == 'U' && bufch[plY + 2][plX] == 'x')
             {
-                level1[plY + 2][plX] = 'Q';
-                level1[plY][plX] = ' ';
-                level1[plY + 1][plX] = 'P';
+                bufch[plY + 2][plX] = 'Q';
+                bufch[plY][plX] = ' ';
+                bufch[plY + 1][plX] = 'P';
                 plY++;
                 step++;
                 win++;
             }
-            else if (level1[plY + 1][plX] == 'U' && level1[plY + 2][plX] != '#' && xcount == 0 && level1[plY + 2][plX] != 'U')
+            else if (bufch[plY + 1][plX] == 'U' && bufch[plY + 2][plX] != '#' && xcount == 0 && bufch[plY + 2][plX] != 'U' && bufch[plY + 2][plX] != 'Q')
             {
-                level1[plY + 2][plX] = 'U';
-                level1[plY + 1][plX] = ' ';
-                level1[plY][plX] = ' ';
-                level1[plY + 1][plX] = 'P';
+                bufch[plY + 2][plX] = 'U';
+                bufch[plY + 1][plX] = ' ';
+                bufch[plY][plX] = ' ';
+                bufch[plY + 1][plX] = 'P';
                 plY++;
                 step++;
             }
-            else if (level1[plY + 1][plX] == 'U' && level1[plY + 2][plX] != '#' && xcount == 1 && level1[plY + 2][plX] != 'U')
+            else if (bufch[plY + 1][plX] == 'U' && bufch[plY + 2][plX] != '#' && xcount == 1 && bufch[plY + 2][plX] != 'U' && bufch[plY + 2][plX] != 'Q')
             {
-                level1[plY + 2][plX] = 'U';
-                level1[plY + 1][plX] = ' ';
-                level1[plY][plX] = 'x';
-                level1[plY + 1][plX] = 'P';
+                bufch[plY + 2][plX] = 'U';
+                bufch[plY + 1][plX] = ' ';
+                bufch[plY][plX] = 'x';
+                bufch[plY + 1][plX] = 'P';
                 plY++;
                 step++;
                 xcount--;
             }
-            else if (level1[plY + 1][plX] == 'x')
+            else if (bufch[plY + 1][plX] == 'x')
             {
                 xcount++;
-                level1[plY][plX] = ' ';
-                level1[plY + 1][plX] = 'P';
+                bufch[plY][plX] = ' ';
+                bufch[plY + 1][plX] = 'P';
                 plY++;
                 step++;
             }
-            else if (level1[plY + 1][plX] != 'U' && xcount == 0)
+            else if (bufch[plY + 1][plX] != 'U' && xcount == 0)
             {
-                level1[plY][plX] = ' ';
-                level1[plY + 1][plX] = 'P';
+                bufch[plY][plX] = ' ';
+                bufch[plY + 1][plX] = 'P';
                 plY++;
                 step++;
             }
-            else if (level1[plY + 1][plX] != 'U' && xcount == 1)
+            else if (bufch[plY + 1][plX] != 'U' && xcount == 1)
             {
-                level1[plY][plX] = 'x';
-                level1[plY + 1][plX] = 'P';
+                bufch[plY][plX] = 'x';
+                bufch[plY + 1][plX] = 'P';
                 plY++;
                 step++;
                 xcount--;
@@ -302,13 +304,32 @@ void game()
     refresh();
 }
 
-int main() {
+int main(int agrc, char* argv[]) {
     int x, y;
     int xn, yn;
     x = getmaxx(stdscr);
     y = getmaxy(stdscr);
     xn = (x / 2) - (WIDTH / 2);
     yn = (y / 2) - (HEIGHT / 2);
+    file_open();
+    for (o = 0; o < HEIGHT; ++o) 
+    {
+        for (p = 0; (ch = getc(level)) != '\n' && (ch != EOF); ++p)
+        {
+            bufch[o][p] = ch; 
+        } 
+        if (ch == EOF) 
+        {
+            break;
+        } 
+        else 
+        {
+            bufch[o][p] = '\0';
+            ++count;
+        }
+
+    } // конец внешнего for
+    fclose(level);
     mvprintw(0, 0, "Game end");
     initscr();
     curs_set(0);
@@ -325,7 +346,7 @@ int main() {
         game();
     }
     erase();
-    mvprintw(xn, yn, "Game end. Your quantity of steps: %d", step);
+    mvprintw(10, 20, "Game end. Your quantity of steps: %d", step);
     refresh();
     getch();
     endwin();
