@@ -21,10 +21,11 @@ char level1[8][12] =
     {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',' ',' ', '#'},
     {'#', ' ', ' ', ' ', ' ', ' ', 'P', ' ', ' ',' ',' ', '#'},
     {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',' ',' ', '#'},
-    {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',' ',' ', '#'},
-    {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',' ',' ', '#'},
-    {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',' ',' ', '#'},
+    {'#', ' ', ' ', ' ', ' ', 'U', ' ', '#', ' ',' ',' ', '#'},
+    {'#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ',' ',' ', '#'},
+    {'#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ',' ',' ', '#'},
     {'#', '#', '#', '#', '#', '#', '#', '#', '#','#','#', '#'}
+
 };
 char level2[8][12] =
 {
@@ -33,9 +34,9 @@ char level2[8][12] =
     {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',' ',' ', '#'},
     {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',' ',' ', '#'},
     {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',' ',' ', '#'},
-    {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',' ',' ', '#'},
-    {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',' ',' ', '#'},
-    {'#', 'P', ' ', ' ', ' ', ' ', ' ', ' ', ' ',' ',' ', '#'},
+    {'#', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ',' ',' ', '#'},
+    {'#', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ',' ',' ', '#'},
+    {'#', 'P', ' ', ' ', ' ', '#', ' ', ' ', ' ',' ',' ', '#'},
     {'#', '#', '#', '#', '#', '#', '#', '#', '#','#','#', '#'}
 };
 
@@ -81,34 +82,78 @@ void game()
     case left:
         if (level1[plY][plX - 1] != '#')
         {
-            level1[plY][plX] = ' ';
-            level1[plY][plX - 1] = 'P';
-            plX--;
+            if (level1[plY][plX - 1] == 'U' && level1[plY][plX - 2] != '#')
+            {
+                level1[plY][plX - 2] = 'U';
+                level1[plY][plX - 1] = ' ';
+                level1[plY][plX] = ' ';
+                level1[plY][plX - 1] = 'P';
+                plX--;
+            }
+            else if (level1[plY][plX - 1] != 'U')
+            {
+                level1[plY][plX] = ' ';
+                level1[plY][plX - 1] = 'P';
+                plX--;
+            }
         }
         break;
 
     case right:
         if (level1[plY][plX + 1] != '#')
         {
-            level1[plY][plX] = ' ';
-            level1[plY][plX + 1] = 'P';
-            plX++;
+            if (level1[plY][plX + 1] == 'U' && level1[plY][plX + 2] != '#')
+            {
+                level1[plY][plX + 2] = 'U';
+                level1[plY][plX + 1] = ' ';
+                level1[plY][plX] = ' ';
+                level1[plY][plX + 1] = 'P';
+                plX++;
+            }
+            else if (level1[plY][plX + 1] != 'U')
+            {
+                level1[plY][plX] = ' ';
+                level1[plY][plX + 1] = 'P';
+                plX++;
+            }
         }
         break;
     case up:
         if (level1[plY - 1][plX] != '#')
         {
-            level1[plY][plX] = ' ';
-            level1[plY - 1][plX] = 'P';
-            plY--;
+            if (level1[plY - 1][plX] == 'U' && level1[plY - 2][plX] != '#')
+            {
+                level1[plY - 2][plX] = 'U';
+                level1[plY - 1][plX] = ' ';
+                level1[plY][plX] = ' ';
+                level1[plY - 1][plX] = 'P';
+                plY--;
+            }
+            else if (level1[plY - 1][plX] != 'U') 
+            {
+                level1[plY][plX] = ' ';
+                level1[plY - 1][plX] = 'P';
+                plY--;
+            }
         }
         break;
     case down:
         if (level1[plY + 1][plX] != '#')
         {
-            level1[plY][plX] = ' ';
-            level1[plY + 1][plX] = 'P';
-            plY++;
+            if (level1[plY + 1][plX] == 'U' && level1[plY + 2][plX] != '#')
+            {
+                level1[plY + 2][plX] = 'U';
+                level1[plY + 1][plX] = ' ';
+                level1[plY][plX] = ' ';
+                level1[plY + 1][plX] = 'P';
+                plY++;
+            }
+            else if (level1[plY + 1][plX] != 'U')
+            {
+                level1[plY][plX] = ' ';
+                level1[plY + 1][plX] = 'P';
+                plY++;
+            }
         }
         break;
     }
@@ -117,8 +162,6 @@ void game()
 
 int main() {
     printf("Choose lvl: ");
-    level = 1;
-    bufch[8][12] = level1[8][12];
     mvprintw(0, 0, "Game end");
     bool Gg = false;
     initscr();
