@@ -3,8 +3,6 @@
 #include <stdio.h>
 
 
-#define WINDOW_WIDTH 40
-#define WINDOW_HEIGHT 23
 #define WIDTH 12
 #define HEIGHT 8
 
@@ -305,6 +303,12 @@ void game()
 }
 
 int main() {
+    int x, y;
+    int xn, yn;
+    x = getmaxx(stdscr);
+    y = getmaxy(stdscr);
+    xn = (x / 2) - (WIDTH / 2);
+    yn = (y / 2) - (HEIGHT / 2);
     mvprintw(0, 0, "Game end");
     initscr();
     curs_set(0);
@@ -321,7 +325,7 @@ int main() {
         game();
     }
     erase();
-    mvprintw(WINDOW_HEIGHT / 2, WINDOW_WIDTH / 3, "Game end. Your quantity of steps: %d", step);
+    mvprintw(xn, yn, "Game end. Your quantity of steps: %d", step);
     refresh();
     getch();
     endwin();
